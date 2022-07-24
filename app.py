@@ -1,4 +1,5 @@
 from ensurepip import bootstrap
+from cv2 import Algorithm
 import pandas as pd
 from sklearn import metrics  # for dataframes
 import streamlit as st  # streamlit
@@ -11,6 +12,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import LabelEncoder
 # for training and testing the data
 from sklearn.model_selection import train_test_split
+# for plotting the metrics
 from sklearn.metrics import plot_confusion_matrix, plot_roc_curve, plot_precision_recall_curve, precision_score, recall_score
 
 
@@ -33,8 +35,11 @@ def main():
         y = df.type  # Target variable
         x = df.drop(columns=['type'])
         x_train, x_test, y_train, y_test = train_test_split(
-            x, y, test_size=0.3, random_state=0)
+            x, y, test_size=0.3, random_state=0)  # 70% training 30% testing
         return x_train, x_test, y_train, y_test
+
+# plotting the metrics - confusion matrix,ROC (reciever operating characteristic) Curve,
+# precision recall curve
 
     def plot_metrics(metrics_list):
         st.set_option('deprecation.showPyplotGlobalUse', False)
@@ -58,11 +63,13 @@ def main():
     x_train, x_test, y_train, y_test = split(df)
     class_names = ['edible', 'poisonous']
     st.sidebar.subheader("Choose Classifier")
-    classifier = st.sidebar.selectbox(
+    classifier = st.sidebar.selectbox(  # Selecting the classifier
         "Classifier", ('Support Vector Machine', 'Logistic Regression', 'Random Forest'))
     st.subheader("Mushroom dataset")
     st.write(df)
     st.write("Dataset dimensions are", str(df.shape))
+
+# Support Vector machine
 
     if classifier == 'Support Vector Machine':
         st.sidebar.subheader("Model Hyperparameters")
@@ -73,10 +80,12 @@ def main():
             'Gamma (Kernel coefficient)', ('scale', 'auto'), key='gamma')
         metrics = st.sidebar.multiselect(
             "Select plot metrics:", ('Confusion Matrix', 'Precision Recall Curve', 'ROC Curve'))
-
+# Algorithm
         if st.sidebar.button("Classify", key='classify'):
             st.subheader("Support Vector Machine results")
             model = SVC(C=C, kernel=kernel, gamma=gamma)
+        # C-Regularizzation Parameter, kernel-{'linear', 'poly', 'rbf', 'sigmoid', 'precomputed'}, default='rbf'
+        # Specifies the kernel type to be used in the algorithm,gamma- Kernel coefficient for 'rbf', 'poly' and 'sigmoid
             model.fit(x_train, y_train)
             accuracy = model.score(x_test, y_test)
             y_pred = model.predict(x_test)
@@ -86,6 +95,8 @@ def main():
             st.write("Recall:", recall_score(
                 y_test, y_pred, labels=class_names).round(2))
             plot_metrics(metrics)
+
+# Logisitic Regression
 
     if classifier == 'Logistic Regression':
         st.sidebar.subheader("Model Hyperparameters")
@@ -95,10 +106,11 @@ def main():
             "Max number of iterations:", 100, 500, key='max_iter')
         metrics = st.sidebar.multiselect(
             "Select plot metrics:", ('Confusion Matrix', 'Precision Recall Curve', 'ROC Curve'))
-
+# Algorithm
         if st.sidebar.button("Classify", key='classify'):
             st.subheader("Logistic Regression Results")
             model = LogisticRegression(C=C, max_iter=max_iter)
+            # C-Regularization parameter, max_iter= max number of iterations
             model.fit(x_train, y_train)
             accuracy = model.score(x_test, y_test)
             y_pred = model.predict(x_test)
@@ -109,17 +121,21 @@ def main():
                 y_test, y_pred, labels=class_names).round(2))
             plot_metrics(metrics)
 
+# Random Forest
+
     if classifier == 'Random Forest':
         st.sidebar.subheader("Model Hyperparameters")
         n_estimators = st.sidebar.number_input(
-            "The number of trees in the forest", 100, 500, step=10, key='n_est')
+            "The number of trees in the forest", 100, 500, step=10, key='n_est')  # num of trees
         max_depth = st.sidebar.number_input(
-            "The maximum depth of the tree", 1, 20, step=1, key='max_step')
+            "The maximum depth of the tree", 1, 20, step=1, key='max_step')  # max depth
         bootstrap = st.sidebar.radio(
             'Bootstrap sample when building trees', ('True', 'False'), key='bootstrap')
+        # bootstrap : bool, default=True Whether bootstrap samples are used when building trees.
+        # If False, the whole dataset is used to build each tree.
         metrics = st.sidebar.multiselect(
             "Select plot metrics:", ('Confusion Matrix', 'Precision Recall Curve', 'ROC Curve'))
-
+# Algorithm
         if st.sidebar.button("Classify", key='classify'):
             st.subheader("Random Forest Results")
             model = RandomForestClassifier(
