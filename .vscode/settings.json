@@ -1,0 +1,17 @@
+{
+    "editor.tokenColorCustomizations": {
+    "[Community Material Theme Ocean High Contrast]": {"comments": "#407c90"}, "textMateRules": [
+        {           
+            "scope": [
+                "string.quoted.docstring.multi.python",
+                "string.quoted.docstring.multi.python punctuation.definition.string.begin.python",
+                "string.quoted.docstring.multi.python punctuation.definition.string.end.python",
+                "string.quoted.docstring.multi.python constant.character.escape.python",
+            ],          
+            "settings": {
+                "foreground": "#97acf1da" //change to your preference
+            }       
+        }
+    ]
+    }
+}

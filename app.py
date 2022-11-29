@@ -1,5 +1,4 @@
-from ensurepip import bootstrap
-from cv2 import Algorithm
+# Packages
 import pandas as pd
 from sklearn import metrics  # for dataframes
 import streamlit as st  # streamlit
